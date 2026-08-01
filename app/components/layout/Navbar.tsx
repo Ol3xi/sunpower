@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from 'framer-motion';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -16,8 +17,12 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Linea superiore dell'energia (Gradiente Sole/Sostenibilità) */}
-      <div className="h-1 w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-500 sticky top-0 z-[60]" />
+      {/* Linea superiore animata (Flusso di Energia) */}
+      <motion.div 
+        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+        className="h-1 w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-500 sticky top-0 z-[60] bg-[length:200%_auto]" 
+      />
 
       {/* Navbar principale con effetto "Vetro" (Glassmorphism) */}
       <nav className="sticky top-1 z-50 w-full backdrop-blur-xl bg-white/80 border-b border-slate-200/50 transition-all duration-300">
