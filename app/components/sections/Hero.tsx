@@ -74,57 +74,90 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* COLONNA IMMAGINE INTERATTIVA */}
+{/* COLONNA IMMAGINE INTERATTIVA */}
           <div className="lg:col-span-7 relative">
-            <div className="relative aspect-[4/3] md:aspect-[16/10] w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-700/20 bg-slate-200">
+            {/* Contenitore Principale (Senza overflow-hidden per permettere alle card di uscire) */}
+            <div className="relative aspect-[4/3] md:aspect-[16/10] w-full rounded-3xl shadow-2xl border border-slate-700/20 bg-slate-200">
               
-              <Image 
-                src="/interactive-house.png" 
-                alt="Schema impianto fotovoltaico"
-                fill
-                className="object-cover"
-                priority
-                onClick={() => setActiveHotspot(null)}
-              />
+              {/* WRAPPER INTERNO PER IMMAGINE E CIRCUITI (Questo taglia gli angoli) */}
+              <div className="absolute inset-0 overflow-hidden rounded-3xl z-0">
+                <Image 
+                  src="/interactive-house.png" 
+                  alt="Schema impianto fotovoltaico"
+                  fill
+                  className="object-cover"
+                  priority
+                  onClick={() => setActiveHotspot(null)}
+                />
 
-              <div className={`absolute inset-0 bg-blue-950/60 mix-blend-multiply transition-opacity duration-1000 pointer-events-none ${isDay ? 'opacity-0' : 'opacity-100'}`} />
+                <div className={`absolute inset-0 bg-blue-950/60 mix-blend-multiply transition-opacity duration-1000 pointer-events-none ${isDay ? 'opacity-0' : 'opacity-100'}`} />
 
-              {/* RENDER CIRCUITI DINAMICI */}
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none z-10">
-                {activeCircuits.map(circuit => (
-                  <CircuitLine key={circuit.id} d={circuit.d} color={circuit.color} reverse={circuit.reverse} />
-                ))}
-              </svg>
+                {/* RENDER CIRCUITI DINAMICI */}
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none">
+                  {activeCircuits.map(circuit => (
+                    <CircuitLine key={circuit.id} d={circuit.d} color={circuit.color} reverse={circuit.reverse} />
+                  ))}
+                </svg>
+              </div>
 
-              {/* RENDER HOTSPOTS DINAMICI */}
-              {hotspots.map((spot) => {
-                const isTopHalf = spot.top < 50;
+              {/* RENDER HOTSPOTS DINAMICI (Z-10 per stare sopra l'immagine) */}
+              <div className="absolute inset-0 z-10 pointer-events-none">
+                {hotspots.map((spot) => {
+                  const isTopHalf = spot.top < 50;
+                  
+                  // Logica anti-taglio laterale per Mobile
+                  const isLeftEdge = spot.left < 45;
+                  const isRightEdge = spot.left > 55;
 
-                return (
-                  <div key={spot.id} className="absolute z-20" style={{ top: `${spot.top}%`, left: `${spot.left}%` }}>
-                    <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer" onClick={() => setActiveHotspot(spot.id === activeHotspot ? null : spot.id)}>
-                      <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className={`absolute inset-0 rounded-full ${isDay ? 'bg-amber-400' : 'bg-blue-400'}`} />
-                      <div className={`relative w-5 h-5 rounded-full border-2 border-white shadow-lg transition-colors duration-300 ${activeHotspot === spot.id ? (isDay ? 'bg-amber-500' : 'bg-blue-500') : 'bg-white group-hover:bg-emerald-400'}`} />
+                  // Se il pallino è attivo, lo portiamo in primissimo piano (z-40) per coprire gli altri
+                  const isActive = activeHotspot === spot.id;
+                  const zIndexClass = isActive ? 'z-40' : 'z-20';
+
+                  // Allineamento Card
+                  let cardAlign = "left-1/2 -translate-x-1/2"; // Default centrato
+                  let arrowAlign = "left-1/2 -translate-x-1/2";
+                  
+                  if (isLeftEdge) {
+                    cardAlign = "left-[-15px] sm:left-[-25px]";
+                    arrowAlign = "left-[20px] sm:left-[30px]";
+                  } else if (isRightEdge) {
+                    cardAlign = "right-[-15px] sm:right-[-25px]";
+                    arrowAlign = "right-[20px] sm:right-[30px]";
+                  }
+
+                  // Allineamento Verticale
+                  const cardVertical = isTopHalf ? 'top-full mt-3' : 'bottom-full mb-3';
+                  const arrowVertical = isTopHalf ? '-top-2 border-t border-l' : '-bottom-2 border-b border-r';
+
+                  return (
+                    <div key={spot.id} className={`absolute ${zIndexClass} pointer-events-auto`} style={{ top: `${spot.top}%`, left: `${spot.left}%` }}>
+                      
+                      <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer p-2" onClick={() => setActiveHotspot(isActive ? null : spot.id)}>
+                        <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className={`absolute inset-2 rounded-full ${isDay ? 'bg-amber-400' : 'bg-blue-400'}`} />
+                        <div className={`relative w-5 h-5 rounded-full border-2 border-white shadow-lg transition-colors duration-300 ${isActive ? (isDay ? 'bg-amber-500' : 'bg-blue-500') : 'bg-white group-hover:bg-emerald-400'}`} />
+                      </div>
+
+                      <AnimatePresence>
+                        {isActive && (
+                          <motion.div
+                            initial={{ opacity: 0, y: isTopHalf ? -10 : 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: isTopHalf ? -10 : 10, scale: 0.95 }}
+                            transition={{ type: "spring", bounce: 0.3 }}
+                            // Larghezza leggermente ridotta su mobile (w-[220px]) per sicurezza
+                            className={`absolute ${cardVertical} ${cardAlign} w-[220px] sm:w-64 p-4 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 ${cardBg}`}
+                          >
+                            <h3 className={`font-bold text-lg mb-1 ${cardText}`}>{spot.title}</h3>
+                            <p className={`text-sm leading-snug ${cardDesc}`}>{spot.description}</p>
+                            <div className={`absolute ${arrowVertical} ${arrowAlign} w-4 h-4 transform rotate-45 border-white/20 ${cardBg}`} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
+                  );
+                })}
+              </div>
 
-                    <AnimatePresence>
-                      {activeHotspot === spot.id && (
-                        <motion.div
-                          initial={{ opacity: 0, y: isTopHalf ? -10 : 10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: isTopHalf ? -10 : 10, scale: 0.95 }}
-                          transition={{ type: "spring", bounce: 0.3 }}
-                          className={`absolute ${isTopHalf ? 'top-full mt-4' : 'bottom-full mb-4'} left-1/2 -translate-x-1/2 w-64 p-4 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 z-30 ${cardBg}`}
-                        >
-                          <h3 className={`font-bold text-lg mb-1 ${cardText}`}>{spot.title}</h3>
-                          <p className={`text-sm leading-snug ${cardDesc}`}>{spot.description}</p>
-                          <div className={`absolute ${isTopHalf ? '-top-2 border-t border-l' : '-bottom-2 border-b border-r'} left-1/2 -translate-x-1/2 w-4 h-4 transform rotate-45 border-white/20 ${cardBg}`} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
             </div>
           </div>
 
