@@ -15,7 +15,7 @@ const cardVariants: Variants = {
     y: 0, 
     scale: 1, 
     // AGGIUNGI as const SUBITO DOPO "spring"
-    transition: { type: "spring" as const, stiffness: 90, damping: 15 } 
+    transition: { type: "spring" as const, stiffness: 90, damping: 15 }
   }
 };
 

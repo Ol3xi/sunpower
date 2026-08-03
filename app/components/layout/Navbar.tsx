@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
+import QuoteModal from "../ui/QuoteModal";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // Elenco dei link per evitare di ripetere codice
   const navLinks = [
     { name: "Home", href: "/" },
@@ -18,22 +19,21 @@ export default function Navbar() {
   return (
     <>
       {/* Linea superiore animata (Flusso di Energia) */}
-      <motion.div 
+      <motion.div
         animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
         transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-        className="h-1 w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-500 sticky top-0 z-[60] bg-[length:200%_auto]" 
+        className="h-1 w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-500 sticky top-0 z-[60] bg-[length:200%_auto]"
       />
 
       {/* Navbar principale con effetto "Vetro" (Glassmorphism) */}
       <nav className="sticky top-1 z-50 w-full backdrop-blur-xl bg-white/80 border-b border-slate-200/50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            
             {/* Logo Aziendale */}
             <div className="flex-shrink-0 flex items-center gap-2">
               {/* Sostituisci questo div con il tuo logo <Image /> futuro */}
               <div className="w-8 h-8 rounded bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-md shadow-emerald-500/20 flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white/80 rounded-sm" /> 
+                <div className="w-4 h-4 border-2 border-white/80 rounded-sm" />
               </div>
               <span className="font-bold text-2xl tracking-tight text-slate-800">
                 Sun<span className="text-emerald-600">Power</span>
@@ -56,7 +56,8 @@ export default function Navbar() {
             {/* Call to Action Desktop */}
             <div className="hidden md:flex">
               <Link
-                href="/preventivo"
+                onClick={() => setIsModalOpen(true)}
+                href=""
                 className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-all shadow-md shadow-amber-500/20 hover:-translate-y-0.5"
               >
                 Preventivo Veloce
@@ -69,11 +70,26 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="text-slate-600 hover:text-emerald-600 focus:outline-none p-2"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   )}
                 </svg>
               </button>
@@ -106,6 +122,7 @@ export default function Navbar() {
           </div>
         )}
       </nav>
+      <QuoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }
