@@ -112,8 +112,8 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                href="/preventivo"
-                onClick={() => setIsMobileMenuOpen(false)}
+                href=""
+                onClick={() => setIsModalOpen(true)}
                 className="block mt-4 text-center px-3 py-3 text-base font-medium text-white bg-amber-500 rounded-md shadow-sm"
               >
                 Preventivo Veloce
