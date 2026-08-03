@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 
@@ -38,30 +38,77 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean, onClo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
-    if (isOpen) {
-      setStep(1);
-      setHighestStep(1);
-      setIsSuccess(false);
-      setIsCopied(false);
-      setFormData({ nome: "", email: "", telefono: "", azienda_fake: "" });
-      setErrors({ nome: "", email: "", telefono: "" });
-    }
-  }
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'unset';
-    return () => { document.body.style.overflow = 'unset'; }
-  }, [isOpen]);
+    if (!isOpen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+
+      const focusableElements = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => element.offsetParent !== null);
+
+      const firstFocusableElement = focusableElements[0];
+      const lastFocusableElement = focusableElements.at(-1);
+
+      if (!firstFocusableElement || !lastFocusableElement) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstFocusableElement) {
+        event.preventDefault();
+        lastFocusableElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusableElement) {
+        event.preventDefault();
+        firstFocusableElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      window.cancelAnimationFrame(focusFrame);
+    };
+  }, [isOpen, onClose]);
+
+  useEffect(
+    () => () => {
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    },
+    [],
+  );
 
   const handleSelectBolletta = (valore: string) => {
     setBolletta(valore);
     setStep(2);
-    if (highestStep < 2) setHighestStep(2);
+    setHighestStep((currentStep) => Math.max(currentStep, 2));
   };
 
   const handleSearchAddress = async (e?: React.FormEvent) => {
@@ -90,11 +137,13 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean, onClo
   };
 
   const handleConfirmLocation = () => {
+    if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
     setIsScanning(true);
-    setTimeout(() => {
+    scanTimeoutRef.current = setTimeout(() => {
       setIsScanning(false);
       setStep(3);
-      if (highestStep < 3) setHighestStep(3);
+      setHighestStep((currentStep) => Math.max(currentStep, 3));
+      scanTimeoutRef.current = null;
     }, 3500);
   };
 
@@ -167,8 +216,26 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean, onClo
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 sm:p-6">
-        <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-white w-full max-w-4xl rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) onClose();
+        }}
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm sm:p-6"
+      >
+        <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={isSuccess ? "quote-success-title" : "quote-modal-title"}
+          tabIndex={-1}
+          initial={{ scale: 0.95, y: 20 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.95, y: 20 }}
+          className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[32px] bg-white shadow-2xl"
+        >
           
           {!isSuccess && (
             <div className="flex justify-between items-center p-6 border-b border-slate-100 relative z-[200] bg-white">
@@ -187,13 +254,19 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean, onClo
                     );
                   })}
                 </div>
-                <h3 className="text-xl font-extrabold text-slate-900">
+                <h3 id="quote-modal-title" className="text-xl font-extrabold text-slate-900">
                   {step === 1 && "Qualifica il tuo impianto"}
                   {step === 2 && "Individua il tuo tetto"}
                   {step === 3 && "Risultato Analisi"}
                 </h3>
               </div>
-              <button onClick={onClose} className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors self-start">
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={onClose}
+                aria-label="Chiudi il preventivo"
+                className="flex h-10 w-10 self-start items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
+              >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
@@ -296,7 +369,7 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean, onClo
                 <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-6 text-white shadow-xl shadow-emerald-500/30">
                   <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                 </div>
-                <h4 className="text-3xl font-extrabold text-slate-900 mb-2">Richiesta Inviata!</h4>
+                <h4 id="quote-success-title" className="text-3xl font-extrabold text-slate-900 mb-2">Richiesta Inviata!</h4>
                 <p className="text-slate-600 font-medium text-lg max-w-md">I nostri esperti ti contatteranno a breve. Hai fretta?</p>
                 
                 <div className="flex flex-col gap-4 w-full max-w-md mt-4">
@@ -310,7 +383,11 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean, onClo
                     onClick={() => {
                       navigator.clipboard.writeText(SITE_CONFIG.PHONE_NUMBER);
                       setIsCopied(true);
-                      setTimeout(() => setIsCopied(false), 2500);
+                      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+                      copyTimeoutRef.current = setTimeout(() => {
+                        setIsCopied(false);
+                        copyTimeoutRef.current = null;
+                      }, 2500);
                     }}
                     className="hidden sm:flex w-full bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-500 text-emerald-800 py-3 px-4 rounded-2xl flex-col items-center justify-center gap-1 group"
                   >

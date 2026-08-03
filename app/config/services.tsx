@@ -2,6 +2,13 @@
 import { ReactNode } from "react";
 import { TargetAndTransition } from "framer-motion";
 
+export interface ServiceDetails {
+  heading: string;
+  description: string;
+  idealFor: string;
+  includes: string[];
+}
+
 // Definiamo il "modello" dei nostri dati per avere l'autocompletamento ed evitare errori
 export interface ServiceItem {
   id: string;
@@ -15,6 +22,7 @@ export interface ServiceItem {
   iconBg: string;
   loopAnim: TargetAndTransition;
   loopDuration: number;
+  details: ServiceDetails;
 }
 
 // Esportiamo l'array dei servizi
@@ -30,7 +38,19 @@ export const services: ServiceItem[] = [
     aura: "bg-amber-400/20 group-hover:bg-amber-400/50",
     iconBg: "bg-amber-50 border-amber-100 shadow-inner shadow-amber-200/50",
     loopAnim: { rotate: [0, 8, -8, 0] },
-    loopDuration: 6
+    loopDuration: 6,
+    details: {
+      heading: "Produci energia in modo più autonomo.",
+      description:
+        "Studiamo tetto, consumi e abitudini per dimensionare un impianto che abbia senso per la tua casa.",
+      idealFor:
+        "Chi vuole ridurre l'energia acquistata dalla rete e valorizzare gli spazi esposti al sole.",
+      includes: [
+        "Analisi di fattibilità e dimensionamento dell'impianto",
+        "Progettazione e installazione curate dal nostro team",
+        "Supporto per le pratiche applicabili al tuo caso",
+      ],
+    },
   },
   {
     id: "accumulo",
@@ -42,7 +62,19 @@ export const services: ServiceItem[] = [
     aura: "bg-emerald-400/20 group-hover:bg-emerald-400/50",
     iconBg: "bg-emerald-50 border-emerald-100 shadow-inner shadow-emerald-200/50",
     loopAnim: { scale: [1, 1.08, 1], opacity: [0.8, 1, 0.8] },
-    loopDuration: 3
+    loopDuration: 3,
+    details: {
+      heading: "Usa anche la sera l'energia prodotta di giorno.",
+      description:
+        "Valutiamo capacità, consumi e priorità per aumentare l'autoconsumo della tua energia solare.",
+      idealFor:
+        "Chi consuma soprattutto fuori dalle ore di sole o vuole avere più continuità nell'uso dell'energia prodotta.",
+      includes: [
+        "Dimensionamento della batteria in base alle tue abitudini",
+        "Integrazione con il fotovoltaico e i carichi di casa",
+        "Monitoraggio semplice dell'energia disponibile",
+      ],
+    },
   },
   {
     id: "pompe-calore",
@@ -55,7 +87,19 @@ export const services: ServiceItem[] = [
     aura: "bg-blue-400/20 group-hover:bg-blue-400/50",
     iconBg: "bg-blue-50 border-blue-100 shadow-inner shadow-blue-200/50",
     loopAnim: { y: [0, -4, 0] },
-    loopDuration: 4
+    loopDuration: 4,
+    details: {
+      heading: "Riscalda e raffresca usando l'elettricità.",
+      description:
+        "Analizziamo casa, impianto esistente e comfort desiderato per capire come integrare una pompa di calore.",
+      idealFor:
+        "Chi vuole superare la caldaia tradizionale o abbinare il comfort domestico alla produzione fotovoltaica.",
+      includes: [
+        "Valutazione tecnica degli spazi e dell'impianto esistente",
+        "Configurazione su misura per riscaldamento e raffrescamento",
+        "Supporto sulle pratiche eventualmente applicabili",
+      ],
+    },
   },
   {
     id: "mobilita",
@@ -67,6 +111,18 @@ export const services: ServiceItem[] = [
     aura: "bg-indigo-400/20 group-hover:bg-indigo-400/50",
     iconBg: "bg-indigo-50 border-indigo-100 shadow-inner shadow-indigo-200/50",
     loopAnim: { rotate: [0, 10, -5, 0], scale: [1, 1.1, 1] },
-    loopDuration: 2
+    loopDuration: 2,
+    details: {
+      heading: "Ricarica l'auto in modo intelligente a casa.",
+      description:
+        "Progettiamo la wallbox in base al veicolo, alla potenza disponibile e al tuo impianto domestico.",
+      idealFor:
+        "Chi vuole ricaricare la propria auto elettrica con più controllo, comodità e integrazione con il fotovoltaico.",
+      includes: [
+        "Verifica dell'impianto elettrico e della potenza disponibile",
+        "Installazione della wallbox e configurazione iniziale",
+        "Impostazioni intelligenti per gestire la ricarica",
+      ],
+    },
   }
 ];

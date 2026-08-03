@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/layout/Navbar"; // Aggiungi questo import
+import { QuoteModalProvider } from "./components/ui/QuoteModalProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Il tuo sito fotovoltaico",
+  title: "Photonclean Systems",
   description: "Installazione pannelli fotovoltaici e sistemi di accumulo",
 };
 
@@ -18,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body className={inter.className}>
-        {/* La Navbar ora apparirà su ogni pagina del sito */}
-        <Navbar />
-        {children}
+        <QuoteModalProvider>
+          {/* La Navbar ora apparirà su ogni pagina del sito */}
+          <Navbar />
+          {children}
+        </QuoteModalProvider>
       </body>
     </html>
   );
