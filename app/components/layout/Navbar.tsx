@@ -39,7 +39,10 @@ export default function Navbar() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
-            <Link href="/#top" className="group flex flex-shrink-0 items-center gap-3">
+            <Link
+              href="/#top"
+              className="group flex flex-shrink-0 items-center gap-3 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
+            >
               <Image
                 src="/Logo.webp"
                 alt="Photonclean Systems"

@@ -75,6 +75,53 @@ function MoonIcon() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path strokeLinecap="round" d="m6 6 12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
+function HotspotDetailsContent({
+  spot,
+  titleClass,
+  descriptionClass,
+  titleId,
+  compact,
+}: {
+  spot: Hotspot;
+  titleClass: string;
+  descriptionClass: string;
+  titleId?: string;
+  compact?: boolean;
+}) {
+  return (
+    <>
+      <h3
+        id={titleId}
+        className={classNames(
+          "mb-1 text-lg font-bold",
+          compact && "pr-10",
+          titleClass,
+        )}
+      >
+        {spot.title}
+      </h3>
+      <p className={classNames("text-sm leading-snug", descriptionClass)}>
+        {spot.description}
+      </p>
+    </>
+  );
+}
+
 function DaylightOverlay({ canAnimate }: { canAnimate: boolean }) {
   return (
     <motion.svg
@@ -103,26 +150,34 @@ function DaylightOverlay({ canAnimate }: { canAnimate: boolean }) {
         transition={{ duration: canAnimate ? 0.8 : 0, ease: "easeOut" }}
       >
         <circle
-          cx="470"
-          cy="170"
+          cx="2050"
+          cy="190"
           r="84"
           fill="#f59e0b"
           filter="url(#hero-sun-glow)"
           opacity="0.28"
         />
-        <circle cx="470" cy="170" r="33" fill="#fef3c7" opacity="0.95" />
-        <circle cx="470" cy="170" r="24" fill="#fbbf24" opacity="0.82" />
+        <circle cx="2050" cy="190" r="33" fill="#fef3c7" opacity="0.95" />
+        <circle cx="2050" cy="190" r="24" fill="#fbbf24" opacity="0.82" />
 
         <path
-          d="M 535 215 C 690 225, 840 255, 1045 340"
+          d="M 1980 238 C 1790 250, 1500 258, 1090 330"
           fill="none"
           filter="url(#hero-sun-glow)"
           stroke="url(#hero-sun-ray)"
           strokeLinecap="round"
-          strokeWidth="38"
+          strokeWidth="44"
         />
         <path
-          d="M 530 210 C 705 205, 890 230, 1170 325"
+          d="M 1990 230 C 1810 280, 1560 340, 1220 430"
+          fill="none"
+          filter="url(#hero-sun-glow)"
+          stroke="url(#hero-sun-ray)"
+          strokeLinecap="round"
+          strokeWidth="34"
+        />
+        <path
+          d="M 1980 255 C 1840 330, 1660 425, 1520 530"
           fill="none"
           filter="url(#hero-sun-glow)"
           stroke="url(#hero-sun-ray)"
@@ -130,12 +185,28 @@ function DaylightOverlay({ canAnimate }: { canAnimate: boolean }) {
           strokeWidth="28"
         />
         <path
-          d="M 520 230 C 650 285, 770 330, 930 420"
+          d="M 1980 238 C 1790 250, 1500 258, 1090 330"
           fill="none"
-          filter="url(#hero-sun-glow)"
-          stroke="url(#hero-sun-ray)"
+          stroke="#fef3c7"
           strokeLinecap="round"
-          strokeWidth="24"
+          strokeOpacity="0.3"
+          strokeWidth="8"
+        />
+        <path
+          d="M 1990 230 C 1810 280, 1560 340, 1220 430"
+          fill="none"
+          stroke="#fef3c7"
+          strokeLinecap="round"
+          strokeOpacity="0.2"
+          strokeWidth="6"
+        />
+        <path
+          d="M 1980 255 C 1840 330, 1660 425, 1520 530"
+          fill="none"
+          stroke="#fef3c7"
+          strokeLinecap="round"
+          strokeOpacity="0.18"
+          strokeWidth="5"
         />
       </motion.g>
     </motion.svg>
@@ -273,9 +344,9 @@ function CircuitLine({
           },
           strokeDashoffset: canAnimate
             ? {
-                duration: 2.9,
+                duration: 4.5,
                 delay: circuit.delay + 0.62,
-                repeat: 1,
+                repeat: Infinity,
                 ease: "linear",
               }
             : { duration: 0 },
@@ -323,6 +394,7 @@ export default function Hero() {
   const isDay = mode === "day";
   const canAnimate = Boolean(isSceneInView && !shouldReduceMotion);
   const activeCircuits = circuitPaths.filter((circuit) => circuit.mode === mode);
+  const activeSpot = hotspots.find((spot) => spot.id === activeHotspot);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -361,6 +433,27 @@ export default function Hero() {
 
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [activeHotspot]);
+
+  useEffect(() => {
+    if (
+      !activeHotspot ||
+      typeof window === "undefined" ||
+      !window.matchMedia("(max-width: 1023px)").matches
+    ) {
+      return undefined;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .getElementById("hotspot-" + activeHotspot + "-details")
+        ?.scrollIntoView({
+          block: "nearest",
+          behavior: shouldReduceMotion ? "auto" : "smooth",
+        });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeHotspot, shouldReduceMotion]);
 
   const getHotspotPosition = (spot: Hotspot) => {
     const fallbackX = (spot.x / heroImageSize.width) * 100;
@@ -498,10 +591,16 @@ export default function Hero() {
                 isDay ? "border-slate-300/90" : "border-slate-700/90",
               )}
             >
-              <div
-                ref={sceneRef}
-                className="relative aspect-[4/3] overflow-hidden rounded-[31px] md:aspect-[16/10]"
-              >
+              <div className="relative">
+                <div
+                  ref={sceneRef}
+                  className={classNames(
+                    "relative aspect-[4/3] overflow-hidden md:aspect-[16/10]",
+                    activeSpot
+                      ? "rounded-t-[31px] rounded-b-none lg:rounded-[31px]"
+                      : "rounded-[31px]",
+                  )}
+                >
                 <Image
                   src="/interactive-house.png"
                   alt="Abitazione con pannelli fotovoltaici, inverter e sistema di accumulo"
@@ -564,7 +663,7 @@ export default function Hero() {
 
                 <div
                   className={classNames(
-                    "absolute right-4 top-4 z-50 rounded-2xl border p-1.5 shadow-lg backdrop-blur-md sm:left-4 sm:right-auto",
+                    "absolute left-2 top-4 z-50 rounded-2xl border p-1.5 shadow-lg backdrop-blur-md sm:left-4",
                     isDay
                       ? "border-white/80 bg-white/85 text-slate-700 shadow-slate-900/10"
                       : "border-white/15 bg-slate-950/65 text-slate-100 shadow-slate-950/30",
@@ -582,29 +681,31 @@ export default function Hero() {
                       type="button"
                       aria-pressed={isDay}
                       onClick={() => selectMode("day")}
+                      aria-label="Mostra il flusso diurno"
                       className={classNames(
-                        "flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400",
+                        "flex h-11 w-11 items-center justify-center rounded-xl p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-10 sm:w-auto sm:gap-2 sm:px-3 sm:py-2",
                         isDay
                           ? "bg-amber-100 text-amber-800 shadow-sm"
                           : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
                       )}
-                    >
-                      <SunIcon />
-                      Giorno
+                      >
+                        <SunIcon />
+                        <span className="hidden sm:inline">Giorno</span>
                     </button>
                     <button
                       type="button"
                       aria-pressed={!isDay}
                       onClick={() => selectMode("night")}
+                      aria-label="Mostra il flusso notturno"
                       className={classNames(
-                        "flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300",
+                        "flex h-11 w-11 items-center justify-center rounded-xl p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 sm:h-10 sm:w-auto sm:gap-2 sm:px-3 sm:py-2",
                         !isDay
                           ? "bg-sky-500 text-white shadow-sm"
                           : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
                       )}
-                    >
-                      <MoonIcon />
-                      Notte
+                      >
+                        <MoonIcon />
+                        <span className="hidden sm:inline">Notte</span>
                     </button>
                   </div>
                 </div>
@@ -621,10 +722,10 @@ export default function Hero() {
                     ? "Pannelli → casa e accumulo"
                     : "Accumulo → casa"}
                 </div>
-              </div>
+                </div>
 
-              <div className="pointer-events-none absolute inset-0 z-30">
-                {hotspots.map((spot) => {
+                <div className="pointer-events-none absolute inset-0 z-30">
+                  {hotspots.map((spot) => {
                   const position = getHotspotPosition(spot);
                   const alignment = getCardAlignment(
                     position.xPercent,
@@ -647,7 +748,6 @@ export default function Hero() {
                     >
                       <button
                         type="button"
-                        aria-controls={"hotspot-" + spot.id}
                         aria-expanded={isActive}
                         aria-label={
                           (isActive ? "Nascondi" : "Mostra") +
@@ -689,7 +789,7 @@ export default function Hero() {
                       <AnimatePresence>
                         {isActive && (
                           <motion.div
-                            id={"hotspot-" + spot.id}
+                            id={"hotspot-" + spot.id + "-popover"}
                             initial={
                               shouldReduceMotion
                                 ? false
@@ -715,18 +815,17 @@ export default function Hero() {
                                 : { type: "spring", bounce: 0.2, duration: 0.35 }
                             }
                             className={classNames(
-                              "absolute w-[220px] rounded-2xl border border-white/20 p-4 shadow-xl backdrop-blur-xl sm:w-64",
+                              "absolute hidden w-[220px] rounded-2xl border border-white/20 p-4 shadow-xl backdrop-blur-xl lg:block lg:w-64",
                               alignment.cardVertical,
                               alignment.cardAlign,
                               cardBackground,
                             )}
                           >
-                            <h3 className={classNames("mb-1 text-lg font-bold", cardText)}>
-                              {spot.title}
-                            </h3>
-                            <p className={classNames("text-sm leading-snug", cardDescription)}>
-                              {spot.description}
-                            </p>
+                            <HotspotDetailsContent
+                              spot={spot}
+                              titleClass={cardText}
+                              descriptionClass={cardDescription}
+                            />
                             <div
                               aria-hidden="true"
                               className={classNames(
@@ -741,8 +840,62 @@ export default function Hero() {
                       </AnimatePresence>
                     </div>
                   );
-                })}
+                  })}
+                </div>
               </div>
+
+              <AnimatePresence initial={false} mode="wait">
+                {activeSpot && (
+                  <motion.div
+                    key={activeSpot.id}
+                    id={"hotspot-" + activeSpot.id + "-details"}
+                    role="region"
+                    aria-labelledby={"hotspot-" + activeSpot.id + "-details-title"}
+                    aria-live="polite"
+                    initial={
+                      shouldReduceMotion ? false : { opacity: 0, y: -8 }
+                    }
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={
+                      shouldReduceMotion
+                        ? { opacity: 0 }
+                        : { opacity: 0, y: -8 }
+                    }
+                    transition={
+                      shouldReduceMotion
+                        ? { duration: 0 }
+                        : { duration: 0.22, ease: "easeOut" }
+                    }
+                    className={classNames(
+                      "relative scroll-mb-4 rounded-b-[31px] border-t px-5 py-5 lg:hidden",
+                      isDay
+                        ? "border-slate-200 bg-white text-slate-900"
+                        : "border-slate-700 bg-slate-900 text-white",
+                    )}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setActiveHotspot(null)}
+                      aria-label="Chiudi dettagli"
+                      className={classNames(
+                        "absolute right-3 top-3 rounded-lg p-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2",
+                        isDay
+                          ? "text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-emerald-600"
+                          : "text-slate-300 hover:bg-white/10 hover:text-white focus-visible:outline-emerald-300",
+                      )}
+                    >
+                      <CloseIcon />
+                    </button>
+                    <HotspotDetailsContent
+                      spot={activeSpot}
+                      titleId={"hotspot-" + activeSpot.id + "-details-title"}
+                      titleClass={cardText}
+                      descriptionClass={cardDescription}
+                      compact
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>

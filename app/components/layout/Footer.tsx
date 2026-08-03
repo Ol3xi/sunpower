@@ -23,7 +23,10 @@ export default function Footer() {
       <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-16 sm:px-6 lg:px-8 lg:pt-20">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-7">
-            <Link href="/#top" className="inline-flex items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200">
+            <Link
+              href="/#top"
+              className="inline-flex items-center gap-3 rounded-md transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"
+            >
               <Image
                 src="/Logo.webp"
                 alt="Photonnclean Systems"
