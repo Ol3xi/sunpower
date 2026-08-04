@@ -100,7 +100,7 @@ function ModeToggle({
   return (
     <div
       className={classNames(
-        "rounded-full border p-1 shadow-[0_14px_28px_-16px_rgba(15,23,42,0.45)] backdrop-blur-xl",
+        "rounded-full border p-1 shadow-[0_14px_28px_-16px_rgba(15,23,42,0.45)] backdrop-blur-xl lg:rounded-2xl lg:p-1.5 lg:shadow-lg lg:backdrop-blur-md",
         isDay
           ? "border-white/80 bg-white/85 text-slate-700 shadow-slate-900/10"
           : "border-white/15 bg-slate-950/65 text-slate-100 shadow-slate-950/30",
@@ -111,7 +111,7 @@ function ModeToggle({
       </span>
       <div
         aria-label="Momento della giornata"
-        className="flex flex-col items-center gap-0.5 lg:flex-row"
+        className="flex flex-col items-center gap-0.5 lg:flex-row lg:gap-1"
         role="group"
       >
         <button
@@ -120,7 +120,7 @@ function ModeToggle({
           onClick={() => onSelectMode("day")}
           aria-label="Mostra il flusso diurno"
           className={classNames(
-            "flex h-10 w-10 items-center justify-center rounded-full p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 lg:w-auto lg:gap-2 lg:px-3 lg:py-2",
+            "flex h-10 w-10 items-center justify-center rounded-full p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 lg:w-auto lg:rounded-xl lg:gap-2 lg:px-3 lg:py-2",
             isDay
               ? "bg-amber-100 text-amber-800 shadow-sm"
               : "text-slate-300 hover:bg-white/10 hover:text-white",
@@ -135,7 +135,7 @@ function ModeToggle({
           onClick={() => onSelectMode("night")}
           aria-label="Mostra il flusso notturno"
           className={classNames(
-            "flex h-10 w-10 items-center justify-center rounded-full p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 lg:w-auto lg:gap-2 lg:px-3 lg:py-2",
+            "flex h-10 w-10 items-center justify-center rounded-full p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 lg:w-auto lg:rounded-xl lg:gap-2 lg:px-3 lg:py-2",
             !isDay
               ? "bg-sky-500 text-white shadow-sm"
               : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",

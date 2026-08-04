@@ -9,6 +9,7 @@ import {
 } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useBodyScrollLock } from "./useBodyScrollLock";
 import { siteConfig } from "../../config/site";
 import type { QuoteEstimate } from "../../lib/estimate";
 import {
@@ -421,6 +422,8 @@ function QuoteModalSession({ onClose }: { onClose: () => void }) {
   const idempotencyKeyRef = useRef<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
+  useBodyScrollLock(true);
+
   const currentStep = steps[step - 1];
   const hasConfirmedLocation = Boolean(resolvedAddress && coordinates);
   const titleId = isSuccess ? "quote-success-title" : "quote-modal-title";
@@ -430,9 +433,6 @@ function QuoteModalSession({ onClose }: { onClose: () => void }) {
   }, []);
 
   useEffect(() => {
-    const previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
     const focusFrame = window.requestAnimationFrame(() => {
       closeButtonRef.current?.focus();
     });
@@ -479,7 +479,6 @@ function QuoteModalSession({ onClose }: { onClose: () => void }) {
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousBodyOverflow;
       document.removeEventListener("keydown", handleKeyDown);
       window.cancelAnimationFrame(focusFrame);
     };
@@ -727,7 +726,7 @@ function QuoteModalSession({ onClose }: { onClose: () => void }) {
 
   return (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-end bg-slate-950/80 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
+          className="fixed inset-0 z-[100] flex items-end overscroll-none bg-slate-950/80 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
           initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -786,7 +785,10 @@ function QuoteModalSession({ onClose }: { onClose: () => void }) {
                 </button>
               </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6 sm:px-8 sm:py-8">
+              <div
+                data-modal-scroll
+                className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] px-5 py-6 sm:px-8 sm:py-8"
+              >
                 <AnimatePresence mode="wait" initial={false}>
                   {isSuccess ? (
                     <motion.section

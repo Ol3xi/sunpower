@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { siteConfig } from "../../config/site";
+import { useBodyScrollLock } from "./useBodyScrollLock";
 
 function CloseIcon() {
   return (
@@ -65,13 +66,12 @@ export default function ContactModal({
   const shouldReduceMotion = useReducedMotion();
   const titleId = "contact-modal-title";
 
+  useBodyScrollLock(isOpen);
+
   useEffect(() => {
     if (!isOpen) {
       return undefined;
     }
-
-    const previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const focusFrame = window.requestAnimationFrame(() => {
       closeButtonRef.current?.focus();
@@ -117,7 +117,6 @@ export default function ContactModal({
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousBodyOverflow;
       document.removeEventListener("keydown", handleKeyDown);
       window.cancelAnimationFrame(focusFrame);
     };
@@ -127,7 +126,7 @@ export default function ContactModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-end bg-slate-950/80 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
+          className="fixed inset-0 z-[100] flex items-end overscroll-none bg-slate-950/80 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
           initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -145,7 +144,7 @@ export default function ContactModal({
             aria-labelledby={titleId}
             aria-describedby="contact-modal-description"
             tabIndex={-1}
-            className="w-full max-w-4xl overflow-hidden rounded-t-[32px] bg-white shadow-2xl sm:rounded-[32px] lg:grid lg:grid-cols-[19rem_minmax(0,1fr)]"
+            className="flex max-h-[calc(100dvh-1rem)] w-full max-w-4xl flex-col overflow-hidden rounded-t-[32px] bg-white shadow-2xl sm:max-h-[90dvh] sm:rounded-[32px] lg:grid lg:grid-cols-[19rem_minmax(0,1fr)]"
             initial={shouldReduceMotion ? false : { opacity: 0, y: 28, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.98 }}
@@ -173,7 +172,10 @@ export default function ContactModal({
               </div>
             </aside>
 
-            <section className="min-w-0 bg-white">
+            <section
+              data-modal-scroll
+              className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] bg-white"
+            >
               <div className="bg-slate-950 px-5 py-4 text-white lg:hidden">
                 <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-200">
                   Photonclean Systems

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { ServiceItem } from "../../config/services";
+import { useBodyScrollLock } from "./useBodyScrollLock";
 
 interface ServiceDetailsModalProps {
   service: ServiceItem;
@@ -48,10 +49,9 @@ export default function ServiceDetailsModal({
   const shouldReduceMotion = useReducedMotion();
   const titleId = `service-details-${service.id}`;
 
-  useEffect(() => {
-    const previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+  useBodyScrollLock(true);
 
+  useEffect(() => {
     const focusFrame = window.requestAnimationFrame(() => {
       closeButtonRef.current?.focus();
     });
@@ -96,7 +96,6 @@ export default function ServiceDetailsModal({
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousBodyOverflow;
       document.removeEventListener("keydown", handleKeyDown);
       window.cancelAnimationFrame(focusFrame);
     };
@@ -110,7 +109,7 @@ export default function ServiceDetailsModal({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[90] flex items-end bg-slate-950/80 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
+        className="fixed inset-0 z-[90] flex items-end overscroll-none bg-slate-950/80 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
         initial={shouldReduceMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -134,7 +133,10 @@ export default function ServiceDetailsModal({
           transition={{ duration: shouldReduceMotion ? 0 : 0.26, ease: "easeOut" }}
           onMouseDown={(event) => event.stopPropagation()}
         >
-          <div className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-5 py-6 sm:px-9 sm:py-8">
+          <div
+            data-modal-scroll
+            className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] px-5 py-6 sm:px-9 sm:py-8"
+          >
             <div
               aria-hidden="true"
               className="pointer-events-none absolute -right-24 -top-24 h-72 w-72"
