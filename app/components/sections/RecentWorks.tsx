@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { featuredWork, recentWorks } from "../../config/works";
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 function ArrowUpRight() {
   return (
@@ -44,7 +44,7 @@ function Check() {
 }
 
 export default function RecentWorks() {
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -136,10 +136,10 @@ export default function RecentWorks() {
 
                 <button
                   type="button"
-                  onClick={openQuoteModal}
+                  onClick={openContactModal}
                   className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-xl bg-slate-900 px-5 py-3 font-bold text-white shadow-lg shadow-slate-900/15 transition-all hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700 lg:group-hover:-translate-y-0.5 motion-reduce:transform-none"
                 >
-                  Progettiamo la tua soluzione
+                  Contattaci
                   <ArrowUpRight />
                 </button>
               </div>
@@ -219,10 +219,10 @@ export default function RecentWorks() {
             </div>
             <button
               type="button"
-              onClick={openQuoteModal}
+              onClick={openContactModal}
               className="inline-flex min-h-12 shrink-0 items-center gap-3 rounded-xl bg-emerald-700 px-5 py-3 font-bold text-white shadow-lg shadow-emerald-900/10 transition-all hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
             >
-              Richiedi un preventivo
+              Contattaci
               <ArrowUpRight />
             </button>
           </div>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 const navigationLinks = [
   { name: "Home", href: "/#top" },
@@ -14,7 +14,7 @@ const navigationLinks = [
 ];
 
 export default function Footer() {
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
 
   return (
     <footer className="relative overflow-hidden bg-slate-950 text-white">
@@ -53,10 +53,10 @@ export default function Footer() {
             </p>
             <button
               type="button"
-              onClick={openQuoteModal}
+              onClick={openContactModal}
               className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-xl bg-amber-300 px-5 py-3 font-bold text-slate-950 shadow-lg shadow-amber-500/10 transition-all hover:-translate-y-0.5 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
             >
-              Richiedi un preventivo
+              Contattaci
               <svg
                 aria-hidden="true"
                 className="h-5 w-5"
@@ -103,10 +103,10 @@ export default function Footer() {
               </p>
               <button
                 type="button"
-                onClick={openQuoteModal}
+                onClick={openContactModal}
                 className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/15 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:border-emerald-200/50 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"
               >
-                Inizia l&apos;analisi
+                Contattaci
                 <svg
                   aria-hidden="true"
                   className="h-4 w-4"
@@ -129,12 +129,12 @@ export default function Footer() {
         <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-7 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>© Photonclean Systems. Tutti i diritti riservati.</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Link
+{/*             <Link
               href="/privacy"
               className="rounded-md font-semibold text-slate-300 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"
             >
               Privacy
-            </Link>
+            </Link> */}
             <Link
               href="/#top"
               className="inline-flex w-fit items-center gap-2 rounded-md font-semibold text-slate-300 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"

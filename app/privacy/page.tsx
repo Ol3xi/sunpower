@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Informativa privacy | Photonclean Systems",
   description:
-    "Informativa sul trattamento dei dati personali per le richieste di preventivo Photonclean Systems.",
+    "Pagina informativa privacy in fase di completamento per Photonclean Systems.",
 };
 
 type PrivacySectionProps = {
@@ -78,8 +78,8 @@ export default function PrivacyPage() {
             Informativa privacy
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl">
-            Come trattiamo i dati condivisi per richiedere un preventivo o
-            iniziare un&apos;analisi del tuo impianto fotovoltaico.
+            Questa pagina è in fase di completamento. Al momento il sito non
+            mette a disposizione moduli per inviare dati o richiedere preventivi online.
           </p>
           <p className="mt-5 text-sm font-medium text-slate-500">
             Ultimo aggiornamento: <Placeholder>[gg mese aaaa]</Placeholder>
@@ -105,10 +105,11 @@ export default function PrivacyPage() {
             />
           </svg>
           <p>
-            Questa è una <strong>bozza informativa</strong>: i contenuti tra
-            parentesi quadre e i contatti di esempio sono placeholder da
-            sostituire e verificare prima della pubblicazione. Il testo non
-            sostituisce una valutazione legale o privacy personalizzata.
+            Il modulo di richiesta è <strong>temporaneamente disattivato</strong>:
+            il sito non raccoglie nome, email, telefono, indirizzo o messaggi
+            tramite form. Questa resta una <strong>bozza informativa</strong> da
+            completare e verificare prima di riattivare la raccolta dati. Il testo
+            non sostituisce una valutazione legale o privacy personalizzata.
           </p>
         </div>
 

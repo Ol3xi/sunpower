@@ -21,7 +21,7 @@ import {
   type EnergyMode,
   type Hotspot,
 } from "../../config/hero";
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 const stars = [
   { x: 270, y: 230, radius: 8, opacity: 0.72 },
@@ -87,6 +87,65 @@ function CloseIcon() {
     >
       <path strokeLinecap="round" d="m6 6 12 12M18 6 6 18" />
     </svg>
+  );
+}
+
+function ModeToggle({
+  isDay,
+  onSelectMode,
+}: {
+  isDay: boolean;
+  onSelectMode: (mode: EnergyMode) => void;
+}) {
+  return (
+    <div
+      className={classNames(
+        "rounded-full border p-1 shadow-[0_14px_28px_-16px_rgba(15,23,42,0.45)] backdrop-blur-xl",
+        isDay
+          ? "border-white/80 bg-white/85 text-slate-700 shadow-slate-900/10"
+          : "border-white/15 bg-slate-950/65 text-slate-100 shadow-slate-950/30",
+      )}
+    >
+      <span className="hidden px-3 pb-1.5 pt-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] lg:block">
+        Simula il flusso
+      </span>
+      <div
+        aria-label="Momento della giornata"
+        className="flex flex-col items-center gap-0.5 lg:flex-row"
+        role="group"
+      >
+        <button
+          type="button"
+          aria-pressed={isDay}
+          onClick={() => onSelectMode("day")}
+          aria-label="Mostra il flusso diurno"
+          className={classNames(
+            "flex h-10 w-10 items-center justify-center rounded-full p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 lg:w-auto lg:gap-2 lg:px-3 lg:py-2",
+            isDay
+              ? "bg-amber-100 text-amber-800 shadow-sm"
+              : "text-slate-300 hover:bg-white/10 hover:text-white",
+          )}
+        >
+          <SunIcon />
+          <span className="hidden lg:inline">Giorno</span>
+        </button>
+        <button
+          type="button"
+          aria-pressed={!isDay}
+          onClick={() => onSelectMode("night")}
+          aria-label="Mostra il flusso notturno"
+          className={classNames(
+            "flex h-10 w-10 items-center justify-center rounded-full p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 lg:w-auto lg:gap-2 lg:px-3 lg:py-2",
+            !isDay
+              ? "bg-sky-500 text-white shadow-sm"
+              : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
+          )}
+        >
+          <MoonIcon />
+          <span className="hidden lg:inline">Notte</span>
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -389,7 +448,7 @@ export default function Hero() {
   const sceneRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const isSceneInView = useInView(sceneRef, { amount: 0.35 });
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
 
   const isDay = mode === "day";
   const canAnimate = Boolean(isSceneInView && !shouldReduceMotion);
@@ -576,10 +635,10 @@ export default function Hero() {
             <div className="pt-2">
               <button
                 type="button"
-                onClick={openQuoteModal}
+                onClick={openContactModal}
                 className="rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-1 hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700 motion-reduce:transform-none"
               >
-                Richiedi Preventivo
+                Contattaci
               </button>
             </div>
           </div>
@@ -587,43 +646,51 @@ export default function Hero() {
           <div className="relative lg:col-span-7">
             <div
               className={classNames(
-                "relative w-full overflow-visible rounded-[32px] border bg-slate-100 shadow-[0_28px_70px_-38px_rgba(15,23,42,0.45)] transition-colors duration-700 motion-reduce:transition-none",
-                isDay ? "border-slate-300/90" : "border-slate-700/90",
+                "relative w-full overflow-visible rounded-[32px] border shadow-[0_28px_70px_-38px_rgba(15,23,42,0.45)] transition-colors duration-700 motion-reduce:transition-none",
+                isDay
+                  ? "border-slate-300/90 bg-slate-100"
+                  : "border-slate-700/90 bg-slate-900",
               )}
             >
               <div className="relative">
+                <div className="absolute left-3 top-3 z-50 lg:left-4 lg:top-4">
+                  <ModeToggle isDay={isDay} onSelectMode={selectMode} />
+                </div>
                 <div
                   ref={sceneRef}
-                  className={classNames(
-                    "relative aspect-[4/3] overflow-hidden md:aspect-[16/10]",
-                    activeSpot
-                      ? "rounded-t-[31px] rounded-b-none lg:rounded-[31px]"
-                      : "rounded-[31px]",
-                  )}
+                  className="relative aspect-[4/3] md:aspect-[16/10]"
                 >
-                <Image
-                  src="/interactive-house.png"
-                  alt="Abitazione con pannelli fotovoltaici, inverter e sistema di accumulo"
-                  fill
-                  className="object-cover"
-                  preload
-                  sizes="(max-width: 1023px) 100vw, 58vw"
-                />
+                  <div
+                    className={classNames(
+                      "absolute inset-0 overflow-hidden",
+                      activeSpot
+                        ? "rounded-t-[31px] rounded-b-none lg:rounded-[31px]"
+                        : "rounded-[31px]",
+                    )}
+                  >
+                    <Image
+                      src="/interactive-house.png"
+                      alt="Abitazione con pannelli fotovoltaici, inverter e sistema di accumulo"
+                      fill
+                      className="object-cover"
+                      preload
+                      sizes="(max-width: 1023px) 100vw, 58vw"
+                    />
 
-                <AnimatePresence initial={false} mode="wait">
-                  {isDay ? (
-                    <DaylightOverlay key="daylight" canAnimate={canAnimate} />
-                  ) : (
-                    <NightOverlay key="night" canAnimate={canAnimate} />
-                  )}
-                </AnimatePresence>
+                    <AnimatePresence initial={false} mode="wait">
+                      {isDay ? (
+                        <DaylightOverlay key="daylight" canAnimate={canAnimate} />
+                      ) : (
+                        <NightOverlay key="night" canAnimate={canAnimate} />
+                      )}
+                    </AnimatePresence>
 
-                <svg
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-10 h-full w-full"
-                  viewBox={"0 0 " + heroImageSize.width + " " + heroImageSize.height}
-                  preserveAspectRatio="xMidYMid slice"
-                >
+                    <svg
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+                      viewBox={"0 0 " + heroImageSize.width + " " + heroImageSize.height}
+                      preserveAspectRatio="xMidYMid slice"
+                    >
                   <defs>
                     <filter
                       id="hero-energy-glow"
@@ -659,70 +726,21 @@ export default function Hero() {
                       ))}
                     </motion.g>
                   </AnimatePresence>
-                </svg>
+                    </svg>
 
-                <div
-                  className={classNames(
-                    "absolute left-2 top-4 z-50 rounded-2xl border p-1.5 shadow-lg backdrop-blur-md sm:left-4",
-                    isDay
-                      ? "border-white/80 bg-white/85 text-slate-700 shadow-slate-900/10"
-                      : "border-white/15 bg-slate-950/65 text-slate-100 shadow-slate-950/30",
-                  )}
-                >
-                  <span className="hidden px-3 pb-1.5 pt-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] sm:block">
-                    Simula il flusso
-                  </span>
-                  <div
-                    aria-label="Momento della giornata"
-                    className="flex items-center gap-1"
-                    role="group"
-                  >
-                    <button
-                      type="button"
-                      aria-pressed={isDay}
-                      onClick={() => selectMode("day")}
-                      aria-label="Mostra il flusso diurno"
+                    <div
                       className={classNames(
-                        "flex h-11 w-11 items-center justify-center rounded-xl p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-10 sm:w-auto sm:gap-2 sm:px-3 sm:py-2",
+                        "pointer-events-none absolute bottom-4 left-4 z-20 rounded-full border px-3 py-2 text-xs font-bold shadow-sm backdrop-blur-md",
                         isDay
-                          ? "bg-amber-100 text-amber-800 shadow-sm"
-                          : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
+                          ? "border-white/80 bg-white/80 text-slate-700"
+                          : "border-white/15 bg-slate-950/60 text-slate-100",
                       )}
-                      >
-                        <SunIcon />
-                        <span className="hidden sm:inline">Giorno</span>
-                    </button>
-                    <button
-                      type="button"
-                      aria-pressed={!isDay}
-                      onClick={() => selectMode("night")}
-                      aria-label="Mostra il flusso notturno"
-                      className={classNames(
-                        "flex h-11 w-11 items-center justify-center rounded-xl p-0 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 sm:h-10 sm:w-auto sm:gap-2 sm:px-3 sm:py-2",
-                        !isDay
-                          ? "bg-sky-500 text-white shadow-sm"
-                          : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
-                      )}
-                      >
-                        <MoonIcon />
-                        <span className="hidden sm:inline">Notte</span>
-                    </button>
+                    >
+                      {isDay
+                        ? "Pannelli → casa e accumulo"
+                        : "Accumulo → casa"}
+                    </div>
                   </div>
-                </div>
-
-                <div
-                  className={classNames(
-                    "pointer-events-none absolute bottom-4 left-4 z-20 rounded-full border px-3 py-2 text-xs font-bold shadow-sm backdrop-blur-md",
-                    isDay
-                      ? "border-white/80 bg-white/80 text-slate-700"
-                      : "border-white/15 bg-slate-950/60 text-slate-100",
-                  )}
-                >
-                  {isDay
-                    ? "Pannelli → casa e accumulo"
-                    : "Accumulo → casa"}
-                </div>
-                </div>
 
                 <div className="pointer-events-none absolute inset-0 z-30">
                   {hotspots.map((spot) => {
@@ -841,6 +859,7 @@ export default function Hero() {
                     </div>
                   );
                   })}
+                </div>
                 </div>
               </div>
 

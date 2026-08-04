@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { processSteps, type ProcessIcon } from "../../config/process";
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 function StepIcon({ icon }: { icon: ProcessIcon }) {
   const commonProps = {
@@ -65,7 +65,7 @@ function StepIcon({ icon }: { icon: ProcessIcon }) {
 }
 
 export default function HowItWorks() {
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -146,10 +146,10 @@ export default function HowItWorks() {
           </div>
           <button
             type="button"
-            onClick={openQuoteModal}
+            onClick={openContactModal}
             className="inline-flex min-h-12 shrink-0 items-center gap-3 rounded-xl bg-amber-300 px-5 py-3 font-bold text-slate-950 shadow-lg shadow-amber-500/10 transition-all hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200"
           >
-            Inizia la tua analisi gratuita
+            Contattaci
             <svg
               aria-hidden="true"
               className="h-5 w-5"

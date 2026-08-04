@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 const navLinks = [
   { name: "Home", href: "/#top" },
@@ -16,7 +16,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
   const shouldReduceMotion = useReducedMotion();
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -76,10 +76,10 @@ export default function Navbar() {
             <div className="hidden lg:flex">
               <button
                 type="button"
-                onClick={openQuoteModal}
+                onClick={openContactModal}
                 className="min-h-11 rounded-lg bg-amber-400 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-md shadow-amber-500/20 transition-all hover:-translate-y-0.5 hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-500"
               >
-                Preventivo veloce
+                Contattaci
               </button>
             </div>
 
@@ -144,11 +144,11 @@ export default function Navbar() {
                 type="button"
                 onClick={() => {
                   closeMobileMenu();
-                  openQuoteModal();
+                  openContactModal();
                 }}
                 className="mt-4 block min-h-12 w-full rounded-xl bg-amber-400 px-3 py-3 text-center text-base font-bold text-slate-950 shadow-sm transition-colors hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-500"
               >
-                Preventivo veloce
+                Contattaci
               </button>
             </div>
           </div>

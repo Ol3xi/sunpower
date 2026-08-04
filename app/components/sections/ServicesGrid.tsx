@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { services, type ServiceItem } from "../../config/services";
 import ServiceDetailsModal from "../ui/ServiceDetailsModal";
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -25,7 +25,7 @@ export default function ServicesGrid() {
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(
     null,
   );
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -73,7 +73,9 @@ export default function ServicesGrid() {
               >
                 <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:radial-gradient(circle_at_center,_#000_1px,_transparent_1px)] [background-size:16px_16px]" />
                 <div
-                  className={`pointer-events-none absolute -right-16 -top-16 h-[250px] w-[250px] rounded-full blur-[70px] transition-colors duration-700 ${service.aura}`}
+                  aria-hidden="true"
+                  style={{ backgroundImage: service.aura }}
+                  className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 opacity-90 transition-opacity duration-500 lg:group-hover:opacity-100"
                 />
 
                 <div className="relative z-10 mb-8">
@@ -172,10 +174,7 @@ export default function ServicesGrid() {
         <ServiceDetailsModal
           service={selectedService}
           onClose={() => setSelectedService(null)}
-          onRequestQuote={() => {
-            setSelectedService(null);
-            openQuoteModal();
-          }}
+          onContact={openContactModal}
         />
       )}
     </>

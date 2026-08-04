@@ -1,8 +1,8 @@
 # Integrazione richieste preventivo
 
-Questa guida descrive la configurazione da fare **quando si passerà dai dati demo a quelli reali**. Il sito è già predisposto, ma non invia un'immagine satellitare finché non viene aggiunto un token valido.
+Questa guida descrive la configurazione da fare **quando si passerà dai dati demo a quelli reali**. Il sito è già predisposto, ma il form è disabilitato lato server finché `QUOTE_FORM_ENABLED` non viene impostato a `true` e non invia un'immagine satellitare finché non viene aggiunto un token valido.
 
-Con `QUOTE_DEMO_MODE=true` e webhook vuoto, il form mostra il risultato dimostrativo senza inviare dati, righe al foglio o email. La pagina finale rende esplicito che è una simulazione.
+Con `QUOTE_FORM_ENABLED=true`, `QUOTE_DEMO_MODE=true` e webhook vuoto, il form mostra il risultato dimostrativo senza inviare dati, righe al foglio o email. La pagina finale rende esplicito che è una simulazione.
 
 ## Cosa invia già il sito a Make
 
@@ -103,6 +103,7 @@ La documentazione ufficiale del servizio è [ArcGIS Static Maps](https://develop
 | Telefono, tempi di risposta e versione privacy | [`app/config/site.ts`](../app/config/site.ts) |
 | Fasce di configurazione, produzione e risparmio; badge e disclaimer demo | [`app/config/estimate.ts`](../app/config/estimate.ts) |
 | Webhook Make e token mappa | `.env.local`, partendo da [`.env.example`](../.env.example) |
+| Riattivare il form dopo la verifica privacy | `QUOTE_FORM_ENABLED=true` in `.env.local` |
 | Attivare/disattivare l'invio simulato | `QUOTE_DEMO_MODE` in `.env.local` |
 | Indirizzo destinatario email e mapping del foglio | Scenario Make |
 | Titolare, fornitori e tempi di conservazione | [`app/privacy/page.tsx`](../app/privacy/page.tsx), dopo verifica legale/privacy |

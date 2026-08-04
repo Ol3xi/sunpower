@@ -95,6 +95,17 @@ function jsonError(message: string, status: number, fieldErrors?: Record<string,
 }
 
 export async function POST(request: NextRequest) {
+  if (process.env.QUOTE_FORM_ENABLED !== "true") {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "La richiesta online non è disponibile in questo momento. Per maggiori informazioni, contattaci telefonicamente.",
+      },
+      { status: 410 },
+    );
+  }
+
   const contentType = request.headers.get("content-type") ?? "";
   const contentLength = Number(request.headers.get("content-length") ?? 0);
 

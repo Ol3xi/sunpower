@@ -20,18 +20,21 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Configurazione del form preventivo
+## Form preventivo (attualmente disattivato)
 
-Prima di pubblicare il form:
+Il sito non raccoglie dati dal form finché `QUOTE_FORM_ENABLED` non viene impostato a `true`. Tutti i pulsanti mostrano invece il contatto telefonico.
 
-1. Regenera il webhook in Make, perché il precedente non deve più essere riutilizzato.
-2. Copia [`.env.example`](.env.example) in `.env.local` e inserisci il nuovo valore in `MAKE_QUOTE_WEBHOOK_URL`.
-3. Sostituisci i dati di esempio in [`app/config/site.ts`](app/config/site.ts), i valori demo in [`app/config/estimate.ts`](app/config/estimate.ts) e completa/verifica [`app/privacy/page.tsx`](app/privacy/page.tsx) con i dati reali dell'attività.
-4. Quando vorrai allegare nell'email un'anteprima satellitare del tetto, aggiungi un token ArcGIS in `ARCGIS_STATIC_MAPS_TOKEN`. Finché resta vuoto, la richiesta contiene comunque il link Google Maps della posizione scelta, senza tentare di creare un'immagine fittizia.
+Quando sarà pronto per la pubblicazione del form:
+
+1. Completa e verifica l'informativa privacy con i dati reali dell'attività.
+2. Regenera il webhook in Make, perché il precedente non deve più essere riutilizzato.
+3. Copia [`.env.example`](.env.example) in `.env.local`, inserisci `MAKE_QUOTE_WEBHOOK_URL` e imposta `QUOTE_FORM_ENABLED=true`.
+4. Sostituisci i dati di esempio in [`app/config/site.ts`](app/config/site.ts) e i valori demo in [`app/config/estimate.ts`](app/config/estimate.ts).
+5. Quando vorrai allegare nell'email un'anteprima satellitare del tetto, aggiungi un token ArcGIS in `ARCGIS_STATIC_MAPS_TOKEN`. Finché resta vuoto, la richiesta contiene comunque il link Google Maps della posizione scelta, senza tentare di creare un'immagine fittizia.
 
 `MAKE_QUOTE_WEBHOOK_URL` è letto solo dal server: non aggiungere il prefisso `NEXT_PUBLIC_` e non inserirlo nel codice client.
 
-Finché lavori alla demo, lascia `QUOTE_DEMO_MODE=true` e `MAKE_QUOTE_WEBHOOK_URL` vuoto: il form arriva alla schermata finale ma non invia né salva dati. Al momento dell'attivazione reale, configura il webhook e rimuovi o imposta a `false` la modalità demo.
+Per un test interno del form, imposta temporaneamente anche `QUOTE_DEMO_MODE=true`: il form arriva alla schermata finale ma non invia né salva dati. Al momento dell'attivazione reale, configura il webhook e rimuovi o imposta a `false` la modalità demo.
 
 La struttura del payload e il mapping consigliato per Make, Gmail e Google Sheets sono descritti in [`docs/integrazione-preventivi.md`](docs/integrazione-preventivi.md).
 

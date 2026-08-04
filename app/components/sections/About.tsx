@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuoteModal } from "../ui/QuoteModalProvider";
+import { useContactModal } from "../ui/ContactModalProvider";
 
 const pillars = [
   {
@@ -71,7 +71,7 @@ function PillarIcon({ icon }: { icon: (typeof pillars)[number]["icon"] }) {
 }
 
 export default function About() {
-  const { openQuoteModal } = useQuoteModal();
+  const { openContactModal } = useContactModal();
 
   return (
     <section
@@ -107,10 +107,10 @@ export default function About() {
 
             <button
               type="button"
-              onClick={openQuoteModal}
+              onClick={openContactModal}
               className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-xl bg-slate-900 px-5 py-3 font-bold text-white shadow-lg shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
             >
-              Parliamo della tua casa
+              Contattaci
               <svg
                 aria-hidden="true"
                 className="h-5 w-5"

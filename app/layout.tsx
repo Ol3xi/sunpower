@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/layout/Navbar"; // Aggiungi questo import
-import { QuoteModalProvider } from "./components/ui/QuoteModalProvider";
+import { ContactModalProvider } from "./components/ui/ContactModalProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,11 +19,11 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body className={inter.className}>
-        <QuoteModalProvider>
+        <ContactModalProvider>
           {/* La Navbar ora apparirà su ogni pagina del sito */}
           <Navbar />
           {children}
-        </QuoteModalProvider>
+        </ContactModalProvider>
       </body>
     </html>
   );
