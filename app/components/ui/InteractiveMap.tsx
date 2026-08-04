@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMap, ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -23,14 +23,21 @@ const customIcon = L.divIcon({
 // Componente per muovere la mappa in automatico
 function MapController({ center }: { center: [number, number] }) {
   const map = useMap();
+  const [latitude, longitude] = center;
+
   useEffect(() => {
-    map.flyTo(center, 20, { duration: 1.5 });
-  }, [center, map]);
+    map.flyTo([latitude, longitude], 20, { duration: 1.5 });
+  }, [latitude, longitude, map]);
+
   return null;
 }
 
 // NUOVO COMPONENTE: Pulsante "Porta il mirino qui"
-function CenterMarkerButton({ onCenter }: { onCenter: (lat: number, lng: number) => void }) {
+function CenterMarkerButton({
+  onCenter,
+}: {
+  onCenter: (lat: number, lng: number) => void;
+}) {
   const map = useMap();
   
   return (
@@ -38,6 +45,8 @@ function CenterMarkerButton({ onCenter }: { onCenter: (lat: number, lng: number)
     <div className="leaflet-top leaflet-right" style={{ pointerEvents: 'auto', marginTop: '16px', marginRight: '16px' }}>
       <div className="leaflet-control">
         <button
+          type="button"
+          aria-label="Porta il mirino al centro della mappa"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -57,18 +66,32 @@ function CenterMarkerButton({ onCenter }: { onCenter: (lat: number, lng: number)
   );
 }
 
-export default function InteractiveMap({ searchCoords }: { searchCoords: [number, number] | null }) {
-  const [position, setPosition] = useState<[number, number]>([37.5644, 15.0658]);
-  const [prevSearch, setPrevSearch] = useState<[number, number] | null>(null);
-  
-  const markerRef = useRef<L.Marker>(null);
+interface InteractiveMapProps {
+  searchCoords: [number, number] | null;
+  onPositionChange?: (position: [number, number]) => void;
+}
 
-  if (searchCoords !== prevSearch) {
-    setPrevSearch(searchCoords);
-    if (searchCoords) {
-      setPosition(searchCoords);
-    }
-  }
+export default function InteractiveMap({
+  searchCoords,
+  onPositionChange,
+}: InteractiveMapProps) {
+  const [uncontrolledPosition, setUncontrolledPosition] = useState<[number, number]>([
+    37.5644,
+    15.0658,
+  ]);
+  const markerRef = useRef<L.Marker>(null);
+  const position = searchCoords ?? uncontrolledPosition;
+
+  const updatePosition = useCallback(
+    (nextPosition: [number, number]) => {
+      if (onPositionChange) {
+        onPositionChange(nextPosition);
+      } else {
+        setUncontrolledPosition(nextPosition);
+      }
+    },
+    [onPositionChange],
+  );
 
   const eventHandlers = useMemo(
     () => ({
@@ -76,11 +99,11 @@ export default function InteractiveMap({ searchCoords }: { searchCoords: [number
         const marker = markerRef.current;
         if (marker != null) {
           const newPos = marker.getLatLng();
-          setPosition([newPos.lat, newPos.lng]);
+          updatePosition([newPos.lat, newPos.lng]);
         }
       },
     }),
-    [],
+    [updatePosition],
   );
 
   return (
@@ -105,7 +128,9 @@ export default function InteractiveMap({ searchCoords }: { searchCoords: [number
         <MapController center={position} />
         
         {/* Il nostro nuovo pulsante che richiama la funzione setPosition */}
-        <CenterMarkerButton onCenter={(lat, lng) => setPosition([lat, lng])} />
+        <CenterMarkerButton
+          onCenter={(lat, lng) => updatePosition([lat, lng])}
+        />
 
         <Marker
           draggable={true}

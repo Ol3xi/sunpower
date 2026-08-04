@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -20,8 +21,14 @@ const QuoteModalContext = createContext<QuoteModalContextValue | null>(null);
 export function QuoteModalProvider({ children }: { children: React.ReactNode }) {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const focusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const openQuoteModal = useCallback(() => {
+    if (focusTimeoutRef.current) {
+      clearTimeout(focusTimeoutRef.current);
+      focusTimeoutRef.current = null;
+    }
+
     const activeElement = document.activeElement;
     triggerRef.current =
       activeElement instanceof HTMLElement ? activeElement : null;
@@ -31,12 +38,26 @@ export function QuoteModalProvider({ children }: { children: React.ReactNode }) 
   const closeQuoteModal = useCallback(() => {
     setIsQuoteModalOpen(false);
 
-    window.requestAnimationFrame(() => {
+    if (focusTimeoutRef.current) {
+      clearTimeout(focusTimeoutRef.current);
+    }
+
+    focusTimeoutRef.current = setTimeout(() => {
       if (triggerRef.current?.isConnected) {
         triggerRef.current.focus();
       }
-    });
+      focusTimeoutRef.current = null;
+    }, 240);
   }, []);
+
+  useEffect(
+    () => () => {
+      if (focusTimeoutRef.current) {
+        clearTimeout(focusTimeoutRef.current);
+      }
+    },
+    [],
+  );
 
   const value = useMemo(
     () => ({ openQuoteModal, closeQuoteModal }),
@@ -46,9 +67,7 @@ export function QuoteModalProvider({ children }: { children: React.ReactNode }) 
   return (
     <QuoteModalContext.Provider value={value}>
       {children}
-      {isQuoteModalOpen && (
-        <QuoteModal isOpen onClose={closeQuoteModal} />
-      )}
+      <QuoteModal isOpen={isQuoteModalOpen} onClose={closeQuoteModal} />
     </QuoteModalContext.Provider>
   );
 }

@@ -128,26 +128,34 @@ export default function Footer() {
 
         <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-7 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>© Photonclean Systems. Tutti i diritti riservati.</p>
-          <Link
-            href="/#top"
-            className="inline-flex w-fit items-center gap-2 rounded-md font-semibold text-slate-300 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"
-          >
-            Torna all&apos;inizio
-            <svg
-              aria-hidden="true"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Link
+              href="/privacy"
+              className="rounded-md font-semibold text-slate-300 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.25}
-                d="m5 11 7-7 7 7M12 4v16"
-              />
-            </svg>
-          </Link>
+              Privacy
+            </Link>
+            <Link
+              href="/#top"
+              className="inline-flex w-fit items-center gap-2 rounded-md font-semibold text-slate-300 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-200"
+            >
+              Torna all&apos;inizio
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.25}
+                  d="m5 11 7-7 7 7M12 4v16"
+                />
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
